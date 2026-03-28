@@ -65,8 +65,8 @@ gulp.task('js', function() {
 
 // Watchers
 gulp.task('watch', function () {
-    gulp.watch('src/js/**/*.js', ['js']);
-    gulp.watch('src/sass/**/*.scss', ['sass']);
+    gulp.watch('src/js/**/*.js', gulp.series('js'));
+    gulp.watch('src/sass/**/*.scss', gulp.series('sass'));
 });
 
 // Optimization Tasks
