@@ -23,9 +23,7 @@ class Plugin
 
     protected $menu_items = [];
 
-    protected $path = "";
-
-    protected $url = "";
+    protected $environment;
 
     /**
      * Pseudo-constructor to be overwritten by implementing classes,
@@ -33,8 +31,7 @@ class Plugin
      */
     protected function initialize()
     {
-        $this->path = plugin_dir_path(dirname(__FILE__));
-        $this->url = plugin_dir_url(dirname(__FILE__));
+        $this->environment = new Environment();
 
         add_action('current_screen', function() {
             add_meta_box('kmdg-menu-metabox', 'Custom Elements', [$this, 'renderMetabox'], 'nav-menus', 'side', 'low');
@@ -208,7 +205,7 @@ class Plugin
     }
 
     protected function __loadACF($paths) {
-        $paths[] = plugin_dir_path(dirname(__FILE__)) . 'acf';
+        $paths[] = $this->environment->getAcfJsonPath();
         return $paths;
     }
 
@@ -278,13 +275,13 @@ class Plugin
      * @hook admin_enqueue_scripts
      */
     protected function __registerAdminAssets() {
-        wp_enqueue_style('kmdg-menu-elements-admin', $this->url."dist/css/admin.css", [], filemtime($this->path."dist/css/admin.css"), 'all');
+        $this->environment->enqueueStyle('kmdg-menu-elements-admin', 'dist/css/admin.css');
     }
 
     /**
      * @hook enqueue_scripts
      */
     protected function __registerAssets() {
-        wp_enqueue_style('kmdg-menu-elements', $this->url."dist/css/menu-elements.css", [], filemtime($this->path."dist/css/menu-elements.css"), 'all');
+        $this->environment->enqueueStyle('kmdg-menu-elements', 'dist/css/menu-elements.css');
     }
 }
