@@ -1,0 +1,64 @@
+{
+    "key": "group_5d08f9d1392b4",
+    "title": "[Menu] Spacer",
+    "fields": [
+        {
+            "key": "field_5d08f9e0faaab",
+            "label": "Size",
+            "name": "size",
+            "type": "number",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": 1,
+            "placeholder": "",
+            "prepend": "Lines",
+            "append": "",
+            "min": 0,
+            "max": "",
+            "step": ".5"
+        },
+        {
+            "key": "field_5d08fa21faaac",
+            "label": "Enable Line",
+            "name": "enable_line",
+            "type": "true_false",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "ui": 1,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "menu_element",
+                "operator": "==",
+                "value": "spacer"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "modified": 1597696013
+}

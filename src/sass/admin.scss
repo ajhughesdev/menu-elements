@@ -1,0 +1,25 @@
+#menu-management {
+    .kmdg-custom-menu-item {
+        .description {
+            display: none;
+        }
+
+        .menu-item-title {
+            color: #47a64d;
+        }
+
+        &.menu-item-type--title {
+            .description:first-child {
+                display: block;
+            }
+        }
+
+        &.menu-item-type--column {
+
+        }
+
+        &.menu-item-type--spacer {
+
+        }
+    }
+}

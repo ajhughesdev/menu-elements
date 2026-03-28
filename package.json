@@ -1,0 +1,37 @@
+{
+  "name": "kmdg-menu-elements",
+  "version": "1.0.0",
+  "description": "Provides and easy interface for adding custom menu elements to WP Menus, along with a few default elements.",
+  "main": "kmdg-menu-elements.php",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jake Finley",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "browserify": "^16.2.3",
+    "del": "^3.0.0",
+    "event-stream": "^4.0.1",
+    "get-style-property": "^0.1.1",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^6.0.0",
+    "gulp-cache": "^1.0.2",
+    "gulp-cssnano": "^2.1.3",
+    "gulp-rename": "^1.4.0",
+    "gulp-sass": "^4.0.1",
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-uglify": "^3.0.1",
+    "gulp-util": "^3.0.8",
+    "run-sequence": "^2.2.1",
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0"
+  },
+  "dependencies": {},
+  "browserslist": [
+    "ie >= 6",
+    "chrome >= 20",
+    "safari >= 1",
+    "firefox >= 3",
+    "iOS >= 1"
+  ]
+}

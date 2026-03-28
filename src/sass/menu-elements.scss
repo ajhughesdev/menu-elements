@@ -1,0 +1,50 @@
+.menu-elements {
+    &__row {
+        width: 100%;
+
+        & > .sub-menu {
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: space-between;
+            align-items: stretch;
+            width: 100%;
+        }
+    }
+
+    &__column {
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: flex-start;
+        align-items: flex-start;
+        flex: 1 2 100%;
+        width: 100%;
+        padding-right: 2em;
+
+        &:last-child {
+            padding-right: 0;
+        }
+
+        &--maximize {
+            flex: 1 1 100%
+        }
+    }
+
+    &__column-wrap {
+        flex: 1 1 auto;
+        width: 100%;
+
+        &--line {
+            border-right-width: 1px;
+            border-right-style: solid;
+            padding-right: 2em;
+        }
+    }
+
+    &__title {
+        font-weight: bold;
+    }
+
+    &__spacer {
+        padding: 0;
+    }
+}

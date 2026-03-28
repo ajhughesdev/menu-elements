@@ -1,0 +1,14 @@
+{
+    "name": "kmdg/aesir",
+    "description": "Aesir Framework",
+    "require": {
+        "php-di/php-di": "^5.2"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jake Finley",
+            "email": "jfinley@kmdg.com"
+        }
+    ]
+}
