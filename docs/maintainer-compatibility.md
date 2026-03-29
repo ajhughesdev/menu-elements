@@ -32,6 +32,17 @@ This plugin has a small public surface but a lot of behavior hangs off it. Treat
 
 Run this checklist after any change that touches plugin bootstrap, walker behavior, ACF integration, or styles.
 
+## Validation Path
+
+Use this validation path for routine maintenance and refactor slices:
+
+1. Run the pure-PHP seam tests with `npm test`.
+2. Lint PHP with `npm run lint:php`.
+3. Rebuild Sass with `npm run build` when `src/sass/` changes.
+4. Run the manual WordPress checks below for admin UI, ACF-backed settings, and front-end walker behavior.
+
+The repo currently has no supported `src/js/` build surface. The Gulp workflow should be treated as Sass-only unless real JavaScript sources are added back to the project.
+
 ### Setup
 
 1. Activate the plugin in WordPress.
