@@ -8,6 +8,7 @@
 
 namespace KMDG\MenuElements;
 
+use Aesir\v1\Exceptions\AesirException;
 use Aesir\v1\Traits\Filterable;
 use Aesir\v1\Traits\Singleton;
 
@@ -62,6 +63,10 @@ class Plugin
     }
 
     public function getTypeLabel($slug) {
+        if(!$this->registry->hasDefinition($slug)) {
+            throw new AesirException("Cannot get label for undefined type [$slug].");
+        }
+
         return $this->registry->getTypeLabel($slug);
     }
 
