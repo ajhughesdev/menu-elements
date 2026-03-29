@@ -20,7 +20,7 @@ class MenuElementRegistry
         $this->definitions[$definition->getSlug()] = $definition;
     }
 
-    public function registerLegacy($title, $slug, callable $main, $after = null, $before = null)
+    public function registerLegacy($title, $slug, callable $main, ?callable $after = null, ?callable $before = null)
     {
         $this->register(
             new MenuElementDefinition(
@@ -41,7 +41,7 @@ class MenuElementRegistry
 
     public function hasDefinition($slug)
     {
-        return !empty($this->definitions[$slug]);
+        return array_key_exists($slug, $this->definitions);
     }
 
     public function getDefinition($slug)
@@ -53,9 +53,18 @@ class MenuElementRegistry
         return $this->definitions[$slug];
     }
 
+    public function getDefinitionOrNull($slug)
+    {
+        return $this->hasDefinition($slug) ? $this->definitions[$slug] : null;
+    }
+
     public function getTypeLabel($slug)
     {
-        return $this->getDefinition($slug)->getTitle();
+        if (!$this->hasDefinition($slug)) {
+            throw new AesirException("Cannot get label for undefined type [$slug].");
+        }
+
+        return $this->definitions[$slug]->getTitle();
     }
 
     public function getMenuItems()
