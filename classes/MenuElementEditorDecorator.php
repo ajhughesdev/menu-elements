@@ -14,9 +14,13 @@ class MenuElementEditorDecorator
     /** @var MenuElementRegistry */
     protected $registry;
 
+    /** @var \DOMDocument */
+    protected $dom;
+
     public function __construct(MenuElementRegistry $registry)
     {
         $this->registry = $registry;
+        $this->dom = new \DOMDocument();
     }
 
     public function decorate($itemOutput, $item)
@@ -25,10 +29,9 @@ class MenuElementEditorDecorator
             return $itemOutput;
         }
 
-        $dom = new \DOMDocument();
-        $dom->loadHTML($itemOutput, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        $this->dom->loadHTML($itemOutput, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
-        $menuItem = $dom->getElementById('menu-item-'.$item->ID);
+        $menuItem = $this->dom->getElementById('menu-item-'.$item->ID);
 
         if (!$menuItem) {
             return $itemOutput;
@@ -42,7 +45,7 @@ class MenuElementEditorDecorator
         $classes = $menuItem->getAttribute('class');
         $menuItem->setAttribute('class', $classes . ' ' . implode(' ', $extra));
 
-        $finder = new \DOMXPath($dom);
+        $finder = new \DOMXPath($this->dom);
         $nodes = $finder->query("//span[@class='menu-item-title']");
 
         if ($nodes->length > 0) {
@@ -50,6 +53,6 @@ class MenuElementEditorDecorator
             $titleElement->nodeValue = $this->registry->getTypeLabel($item->type);
         }
 
-        return str_replace('%09', '', $dom->saveHTML());
+        return str_replace('%09', '', $this->dom->saveHTML());
     }
 }

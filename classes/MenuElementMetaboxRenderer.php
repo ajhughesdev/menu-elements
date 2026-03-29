@@ -13,13 +13,7 @@ class MenuElementMetaboxRenderer
 {
     public function render(array $menuItems, $navMenuSelectedId)
     {
-        $dbFields = false;
-
-        if (false) {
-            $dbFields = array('parent' => 'parent', 'id' => 'post_parent');
-        }
-
-        $walker = new \Walker_Nav_Menu_Checklist($dbFields);
+        $walker = new \Walker_Nav_Menu_Checklist(false);
 
         $removedArgs = array(
             'action',
