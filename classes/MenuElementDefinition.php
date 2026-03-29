@@ -23,7 +23,7 @@ class MenuElementDefinition
 
     protected $after;
 
-    public function __construct($title, $slug, array $prototypeItemData, callable $main, $after = null, $before = null)
+    public function __construct($title, $slug, array $prototypeItemData, callable $main, ?callable $after = null, ?callable $before = null)
     {
         $this->title = $title;
         $this->slug = $slug;

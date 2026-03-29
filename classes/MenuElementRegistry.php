@@ -20,7 +20,7 @@ class MenuElementRegistry
         $this->definitions[$definition->getSlug()] = $definition;
     }
 
-    public function registerLegacy($title, $slug, callable $main, $after = null, $before = null)
+    public function registerLegacy($title, $slug, callable $main, ?callable $after = null, ?callable $before = null)
     {
         $this->register(
             new MenuElementDefinition(
@@ -75,7 +75,7 @@ class MenuElementRegistry
             'ID' => 1,
             'db_id' => 0,
             'menu_item_parent' => 0,
-            'object_id' => "column",
+            'object_id' => 0,
             'post_parent' => 0,
             'type' => $slug,
             'object' => $slug,
