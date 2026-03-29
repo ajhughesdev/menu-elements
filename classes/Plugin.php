@@ -29,6 +29,12 @@ class Plugin
     /** @var MenuElementRenderer */
     protected $renderer;
 
+    /** @var MenuElementMetaboxRenderer */
+    protected $metaboxRenderer;
+
+    /** @var MenuElementEditorDecorator */
+    protected $menuElementEditorDecorator;
+
     /**
      * Pseudo-constructor to be overwritten by implementing classes,
      * this will be ran once upon creation of the singleton's instance.
@@ -39,6 +45,8 @@ class Plugin
         $this->registry = new MenuElementRegistry();
         $this->fieldResolver = new MenuElementFieldResolver();
         $this->renderer = new MenuElementRenderer($this->registry, $this->fieldResolver);
+        $this->metaboxRenderer = new MenuElementMetaboxRenderer();
+        $this->menuElementEditorDecorator = new MenuElementEditorDecorator($this->registry);
 
         add_action('current_screen', function() {
             add_meta_box('kmdg-menu-metabox', 'Custom Elements', [$this, 'renderMetabox'], 'nav-menus', 'side', 'low');
@@ -165,53 +173,13 @@ class Plugin
      */
     protected function __renderMetabox($object, $args) {
         global $nav_menu_selected_id;
-        // Create an array of objects that imitate Post objects
 
-        $db_fields = false;
+        echo $this->metaboxRenderer->render($this->registry->getMenuItems(), $nav_menu_selected_id);
+    }
 
-        // If your links will be hieararchical, adjust the $db_fields array bellow
-        if ( false ) {
-            $db_fields = array( 'parent' => 'parent', 'id' => 'post_parent' );
-        }
-
-        $walker = new \Walker_Nav_Menu_Checklist( $db_fields );
-
-        $removed_args = array(
-            'action',
-            'customlink-tab',
-            'edit-menu-item',
-            'menu-item',
-            'page-tab',
-            '_wpnonce',
-        ); ?>
-
-        <div id="kmdg-menu-elements">
-            <div id="tabs-panel-kmdg-menu-elements-all" class="tabs-panel tabs-panel-active">
-                <ul id="kmdg-menu-elements-checklist-pop" class="categorychecklist form-no-clear" >
-                    <?php echo walk_nav_menu_tree( array_map( 'wp_setup_nav_menu_item', $this->registry->getMenuItems() ), 0, (object) ['walker' => $walker] ); ?>
-                </ul>
-
-                <p class="button-controls">
-                <span class="list-controls">
-                    <a href="<?php
-                    echo esc_url(add_query_arg(
-                        array(
-                            'kmdg-menu-elements-all' => 'all',
-                            'selectall' => 1,
-                        ),
-                        remove_query_arg( $removed_args )
-                    ));
-                    ?>#kmdg-menu-metabox" class="select-all"><?php _e( 'Select All' ); ?></a>
-                </span>
-
-                    <span class="add-to-menu">
-                    <input type="submit"<?php wp_nav_menu_disabled_check( $nav_menu_selected_id ); ?> class="button-secondary submit-add-to-menu right" value="<?php esc_attr_e( 'Add to Menu' ); ?>" name="add-kmdg-menu-elements-menu-item" id="submit-kmdg-menu-elements" />
-                    <span class="spinner"></span>
-                </span>
-                </p>
-            </div>
-        </div>
-        <?php
+    protected function __decorateEditWalkerItemOutput($itemOutput, $item)
+    {
+        return $this->menuElementEditorDecorator->decorate($itemOutput, $item);
     }
 
     public function __replaceEditWalker( $class, $menu_id = 0 ) {
