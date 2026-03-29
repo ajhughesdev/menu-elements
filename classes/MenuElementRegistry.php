@@ -53,9 +53,18 @@ class MenuElementRegistry
         return $this->definitions[$slug];
     }
 
+    public function getDefinitionOrNull($slug)
+    {
+        return $this->hasDefinition($slug) ? $this->definitions[$slug] : null;
+    }
+
     public function getTypeLabel($slug)
     {
-        return $this->getDefinition($slug)->getTitle();
+        if (!$this->hasDefinition($slug)) {
+            throw new AesirException("Cannot get label for undefined type [$slug].");
+        }
+
+        return $this->definitions[$slug]->getTitle();
     }
 
     public function getMenuItems()

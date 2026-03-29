@@ -66,27 +66,21 @@ class Plugin
     }
 
     protected function __getItemContent($default, $item, $depth, $args) {
-        if($this->registry->hasDefinition($item->type)) {
-            return $this->registry->getDefinition($item->type)->getItemContent($default, $item, $depth, $args);
-        }
+        $definition = $this->registry->getDefinitionOrNull($item->type);
 
-        return $default;
+        return $definition ? $definition->getItemContent($default, $item, $depth, $args) : $default;
     }
 
     protected function __getItemContentAfter($default, $item, $depth, $args) {
-        if($this->registry->hasDefinition($item->type)) {
-            return $this->registry->getDefinition($item->type)->getItemContentAfter($default, $item, $depth, $args);
-        }
+        $definition = $this->registry->getDefinitionOrNull($item->type);
 
-        return $default;
+        return $definition ? $definition->getItemContentAfter($default, $item, $depth, $args) : $default;
     }
 
     protected function __getItemPreRender($item) {
-        if($this->registry->hasDefinition($item->type)) {
-            return $this->registry->getDefinition($item->type)->getItemPreRender($item);
-        }
+        $definition = $this->registry->getDefinitionOrNull($item->type);
 
-        return $item;
+        return $definition ? $definition->getItemPreRender($item) : $item;
     }
 
     protected function __rowCallback($item, $depth, $args) {
