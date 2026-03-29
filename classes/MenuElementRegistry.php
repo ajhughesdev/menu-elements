@@ -84,7 +84,7 @@ class MenuElementRegistry
             'ID' => 1,
             'db_id' => 0,
             'menu_item_parent' => 0,
-            'object_id' => 0,
+            'object_id' => "column",
             'post_parent' => 0,
             'type' => $slug,
             'object' => $slug,
