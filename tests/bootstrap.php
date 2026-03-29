@@ -85,7 +85,7 @@ function menu_elements_test_assert_throws(callable $callback, $expectedClass, $e
 }
 
 if (!function_exists('apply_filters')) {
-    function apply_filters($tag, $value)
+    function apply_filters($tag, $value, ...$args)
     {
         return $value;
     }
