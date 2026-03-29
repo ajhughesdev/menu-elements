@@ -72,7 +72,7 @@ class MenuElementRenderer
         $column_size = $this->fieldResolver->getColumnSize($item);
 
         if (!empty($column_size)) {
-            $sanitized_column_size = \sanitize_html_class($column_size);
+            $sanitized_column_size = sanitize_html_class($column_size);
 
             if ($sanitized_column_size !== '') {
                 $item->classes[] = 'menu-elements__column--' . $sanitized_column_size;
@@ -98,7 +98,7 @@ class MenuElementRenderer
     public function titleCallback($item, $depth, $args)
     {
         $title = get_the_title($item);
-        $escaped_title = \esc_html($title);
+        $escaped_title = esc_html($title);
 
         return apply_filters('KMDG/MenuElements/Title/html', "<div class='menu-elements__title'>{$escaped_title}</div>", $item, $depth, $args, $title);
     }
