@@ -26,6 +26,9 @@ class Plugin
     /** @var MenuElementFieldResolver */
     protected $fieldResolver;
 
+    /** @var MenuElementRenderer */
+    protected $renderer;
+
     /**
      * Pseudo-constructor to be overwritten by implementing classes,
      * this will be ran once upon creation of the singleton's instance.
@@ -35,6 +38,7 @@ class Plugin
         $this->environment = new Environment();
         $this->registry = new MenuElementRegistry();
         $this->fieldResolver = new MenuElementFieldResolver();
+        $this->renderer = new MenuElementRenderer($this->registry, $this->fieldResolver);
 
         add_action('current_screen', function() {
             add_meta_box('kmdg-menu-metabox', 'Custom Elements', [$this, 'renderMetabox'], 'nav-menus', 'side', 'low');
@@ -75,64 +79,39 @@ class Plugin
     }
 
     protected function __getItemContent($default, $item, $depth, $args) {
-        if($this->registry->hasDefinition($item->type)) {
-            return $this->registry->getDefinition($item->type)->getItemContent($default, $item, $depth, $args);
-        }
-
-        return $default;
+        return $this->renderer->getItemContent($default, $item, $depth, $args);
     }
 
     protected function __getItemContentAfter($default, $item, $depth, $args) {
-        if($this->registry->hasDefinition($item->type)) {
-            return $this->registry->getDefinition($item->type)->getItemContentAfter($default, $item, $depth, $args);
-        }
-
-        return $default;
+        return $this->renderer->getItemContentAfter($default, $item, $depth, $args);
     }
 
     protected function __getItemPreRender($item) {
-        if($this->registry->hasDefinition($item->type)) {
-            return $this->registry->getDefinition($item->type)->getItemPreRender($item);
-        }
-
-        return $item;
+        return $this->renderer->getItemPreRender($item);
     }
 
     protected function __rowCallback($item, $depth, $args) {
-        return "";
+        return $this->renderer->rowCallback($item, $depth, $args);
     }
 
     protected function __columnCallback($item, $depth, $args) {
-        $lineClass = $this->fieldResolver->isLineEnabled($item) ? 'menu-elements__column-wrap--line' : '';
-
-        return "<div class='menu-elements__column-wrap {$lineClass}'>";
+        return $this->renderer->columnCallback($item, $depth, $args);
     }
 
     protected function __columnCallbackAfter($item, $depth, $args) {
-        return "</div>";
+        return $this->renderer->columnCallbackAfter($item, $depth, $args);
     }
 
     protected function __columnCallbackBefore($item) {
-        $item->classes[] = 'menu-elements__column--'.$this->fieldResolver->getColumnSize($item);
-
-        return $item;
+        return $this->renderer->columnCallbackBefore($item);
     }
 
     protected function __spacerCallback($item, $depth, $args) {
-        $line = $this->fieldResolver->isLineEnabled($item);
-        $lineClass = $line ? 'menu-elements__spacer--has-line' : '';
-        $size = $this->fieldResolver->getSpacerSize($item) / 2;
-        $border = $line ? 'border: 1px solid;' : '';
-
-        return apply_filters('KMDG/MenuElements/Spacer/html',
-            "<div style='overflow: hidden;'><div class='menu-elements__spacer {$lineClass}' style='padding-top: {$size}em;margin-bottom: {$size}em;{$border}'></div></div>",
-            $item, $depth, $args, $line, $lineClass, $size, $border
-        );
+        return $this->renderer->spacerCallback($item, $depth, $args);
     }
 
     protected function __titleCallback($item, $depth, $args) {
-        $title = get_the_title($item);
-        return apply_filters('KMDG/MenuElements/Title/html', "<div class='menu-elements__title'>{$title}</div>", $item, $depth, $args, $title);
+        return $this->renderer->titleCallback($item, $depth, $args);
     }
 
     protected function __addACFLocations($choices) {
