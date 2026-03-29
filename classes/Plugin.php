@@ -23,6 +23,7 @@ class Plugin
 
     protected $menu_items = [];
 
+    /** @var Environment */
     protected $environment;
 
     /**

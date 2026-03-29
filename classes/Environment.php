@@ -49,6 +49,18 @@ class Environment
 
     protected function getAssetVersion($relativePath)
     {
-        return filemtime($this->getAssetPath($relativePath));
+        $path = $this->getAssetPath($relativePath);
+
+        if (!is_readable($path)) {
+            return null;
+        }
+
+        $mtime = filemtime($path);
+
+        if ($mtime === false) {
+            return null;
+        }
+
+        return $mtime;
     }
 }
