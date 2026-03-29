@@ -8,23 +8,19 @@
 
 namespace KMDG\MenuElements;
 
-
-use Aesir\v1\Exceptions\AesirException;
 use Aesir\v1\Traits\Filterable;
 use Aesir\v1\Traits\Singleton;
-use mysql_xdevapi\Exception;
 
 class Plugin
 {
     use Filterable;
     use Singleton;
 
-    protected $types = [];
-
-    protected $menu_items = [];
-
     /** @var Environment */
     protected $environment;
+
+    /** @var MenuElementRegistry */
+    protected $registry;
 
     /**
      * Pseudo-constructor to be overwritten by implementing classes,
@@ -33,6 +29,7 @@ class Plugin
     protected function initialize()
     {
         $this->environment = new Environment();
+        $this->registry = new MenuElementRegistry();
 
         add_action('current_screen', function() {
             add_meta_box('kmdg-menu-metabox', 'Custom Elements', [$this, 'renderMetabox'], 'nav-menus', 'side', 'low');
@@ -53,82 +50,37 @@ class Plugin
         $this->addAction('admin_enqueue_scripts', 'registerAdminAssets');
         $this->addAction('wp_enqueue_scripts', 'registerAssets');
 
-        $this->addItem('Row', 'row',
-            apply_filters('KMDG/MenuElements/Row/callback', [$this, 'rowCallback'])
-        );
-
-        $this->addItem('Column', 'column',
-            apply_filters('KMDG/MenuElements/Column/callback', [$this, 'columnCallback']),
-            apply_filters('KMDG/MenuElements/Column/after', [$this, 'columnCallbackAfter']),
-            apply_filters('KMDG/MenuElements/Column/before', [$this, 'columnCallbackBefore'])
-        );
-
-        $this->addItem('Spacer', 'spacer', [$this, 'spacerCallback']);
-
-        $this->addItem('Title', 'title', [$this, 'titleCallback']);
+        (new BuiltInTypeProvider())->register($this);
     }
 
-    public function addItem($name, $slug, callable $callback, callable $after = null, callable $preRender = null) {
-        $this->types[$slug] = [
-            'title' => $name,
-            'before' => $preRender,
-            'main' => $callback,
-            'after' => $after
-        ];
-
-        $this->menu_items[$slug] = (object) [
-            'ID' => 1,
-            'db_id' => 0,
-            'menu_item_parent' => 0,
-            'object_id' => "column",
-            'post_parent' => 0,
-            'type' => $slug,
-            'object' => $slug,
-            'type_label' => $name,
-            'title' => $name,
-            'url' => null,
-            'target' => '',
-            'attr_title' => '',
-            'description' => '',
-            'classes' => ["menu-elements__$slug"],
-            'xfn' => ''
-        ];
+    public function addItem($name, $slug, callable $callback, ?callable $after = null, ?callable $preRender = null) {
+        $this->registry->registerLegacy($name, $slug, $callback, $after, $preRender);
     }
 
     public function getTypes() {
-        return array_keys($this->types);
+        return $this->registry->getTypes();
     }
 
     public function getTypeLabel($slug) {
-        if(empty($this->types[$slug])) {
-            throw new AesirException("Cannot get label for undefined type [$slug].");
-        }
-
-        return $this->types[$slug]['title'];
+        return $this->registry->getTypeLabel($slug);
     }
 
     protected function __getItemContent($default, $item, $depth, $args) {
-        if(!empty($this->types[$item->type]) && is_callable($this->types[$item->type]['main'])) {
-            return call_user_func($this->types[$item->type]['main'], $item, $depth, $args);
-        }
+        $definition = $this->registry->getDefinitionOrNull($item->type);
 
-        return $default;
+        return $definition ? $definition->getItemContent($default, $item, $depth, $args) : $default;
     }
 
     protected function __getItemContentAfter($default, $item, $depth, $args) {
-        if(!empty($this->types[$item->type]) && is_callable($this->types[$item->type]['after'])) {
-            return call_user_func($this->types[$item->type]['after'], $item, $depth, $args);
-        }
+        $definition = $this->registry->getDefinitionOrNull($item->type);
 
-        return $default;
+        return $definition ? $definition->getItemContentAfter($default, $item, $depth, $args) : $default;
     }
 
     protected function __getItemPreRender($item) {
-        if(!empty($this->types[$item->type]) && is_callable($this->types[$item->type]['before'])) {
-            return call_user_func($this->types[$item->type]['before'], $item);
-        }
+        $definition = $this->registry->getDefinitionOrNull($item->type);
 
-        return $item;
+        return $definition ? $definition->getItemPreRender($item) : $item;
     }
 
     protected function __rowCallback($item, $depth, $args) {
@@ -176,7 +128,7 @@ class Plugin
 
     protected function __addACFLocVals($choices) {
 
-        foreach ($this->menu_items as $slug => $element) {
+        foreach ($this->registry->getMenuItems() as $slug => $element) {
             $choices[$slug] = $element->title;
         }
 
@@ -242,7 +194,7 @@ class Plugin
         <div id="kmdg-menu-elements">
             <div id="tabs-panel-kmdg-menu-elements-all" class="tabs-panel tabs-panel-active">
                 <ul id="kmdg-menu-elements-checklist-pop" class="categorychecklist form-no-clear" >
-                    <?php echo walk_nav_menu_tree( array_map( 'wp_setup_nav_menu_item', $this->menu_items ), 0, (object) ['walker' => $walker] ); ?>
+                    <?php echo walk_nav_menu_tree( array_map( 'wp_setup_nav_menu_item', $this->registry->getMenuItems() ), 0, (object) ['walker' => $walker] ); ?>
                 </ul>
 
                 <p class="button-controls">
