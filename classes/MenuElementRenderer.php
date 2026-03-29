@@ -23,31 +23,43 @@ class MenuElementRenderer
         $this->fieldResolver = $fieldResolver;
     }
 
-    public function getItemContent($default, $item, $depth, $args)
+    private function getDefinitionOrNull($item)
     {
-        if ($this->registry->hasDefinition($item->type)) {
-            return $this->registry->getDefinition($item->type)->getItemContent($default, $item, $depth, $args);
+        if (!$this->registry->hasDefinition($item->type)) {
+            return null;
         }
 
-        return $default;
+        return $this->registry->getDefinition($item->type);
+    }
+
+    public function getItemContent($default, $item, $depth, $args)
+    {
+        $definition = $this->getDefinitionOrNull($item);
+        if ($definition === null) {
+            return $default;
+        }
+
+        return $definition->getItemContent($default, $item, $depth, $args);
     }
 
     public function getItemContentAfter($default, $item, $depth, $args)
     {
-        if ($this->registry->hasDefinition($item->type)) {
-            return $this->registry->getDefinition($item->type)->getItemContentAfter($default, $item, $depth, $args);
+        $definition = $this->getDefinitionOrNull($item);
+        if ($definition === null) {
+            return $default;
         }
 
-        return $default;
+        return $definition->getItemContentAfter($default, $item, $depth, $args);
     }
 
     public function getItemPreRender($item)
     {
-        if ($this->registry->hasDefinition($item->type)) {
-            return $this->registry->getDefinition($item->type)->getItemPreRender($item);
+        $definition = $this->getDefinitionOrNull($item);
+        if ($definition === null) {
+            return $item;
         }
 
-        return $item;
+        return $definition->getItemPreRender($item);
     }
 
     public function rowCallback($item, $depth, $args)
