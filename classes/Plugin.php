@@ -22,6 +22,9 @@ class Plugin
     /** @var MenuElementRegistry */
     protected $registry;
 
+    /** @var MenuElementFieldResolver */
+    protected $fieldResolver;
+
     /**
      * Pseudo-constructor to be overwritten by implementing classes,
      * this will be ran once upon creation of the singleton's instance.
@@ -30,6 +33,7 @@ class Plugin
     {
         $this->environment = new Environment();
         $this->registry = new MenuElementRegistry();
+        $this->fieldResolver = new MenuElementFieldResolver();
 
         add_action('current_screen', function() {
             add_meta_box('kmdg-menu-metabox', 'Custom Elements', [$this, 'renderMetabox'], 'nav-menus', 'side', 'low');
@@ -88,7 +92,7 @@ class Plugin
     }
 
     protected function __columnCallback($item, $depth, $args) {
-        $lineClass = get_field('enable_line', $item) ? 'menu-elements__column-wrap--line' : '';
+        $lineClass = $this->fieldResolver->isLineEnabled($item) ? 'menu-elements__column-wrap--line' : '';
 
         return "<div class='menu-elements__column-wrap {$lineClass}'>";
     }
@@ -98,15 +102,15 @@ class Plugin
     }
 
     protected function __columnCallbackBefore($item) {
-        $item->classes[] = 'menu-elements__column--'.get_field('column_size', $item);
+        $item->classes[] = 'menu-elements__column--'.$this->fieldResolver->getColumnSize($item);
 
         return $item;
     }
 
     protected function __spacerCallback($item, $depth, $args) {
-        $line = get_field('enable_line', $item);
+        $line = $this->fieldResolver->isLineEnabled($item);
         $lineClass = $line ? 'menu-elements__spacer--has-line' : '';
-        $size = get_field('size', $item) / 2;
+        $size = $this->fieldResolver->getSpacerSize($item) / 2;
         $border = $line ? 'border: 1px solid;' : '';
 
         return apply_filters('KMDG/MenuElements/Spacer/html',
