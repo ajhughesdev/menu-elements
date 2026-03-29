@@ -41,7 +41,7 @@ class MenuElementRegistry
 
     public function hasDefinition($slug)
     {
-        return !empty($this->definitions[$slug]);
+        return array_key_exists($slug, $this->definitions);
     }
 
     public function getDefinition($slug)
