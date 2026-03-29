@@ -5,7 +5,11 @@
   "main": "kmdg-menu-elements.php",
   "scripts": {
     "start": "gulp watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "watch": "gulp watch",
+    "sass": "gulp sass",
+    "build": "gulp build",
+    "lint:php": "php -l kmdg-menu-elements.php && find classes -name '*.php' -print0 | xargs -0 -n1 php -l",
+    "test": "php tests/run.php"
   },
   "author": "Jake Finley",
   "license": "GPL-3.0",
@@ -24,6 +28,7 @@
     "gulp-uglify": "^3.0.2",
     "gulp-util": "^1.0.0",
     "run-sequence": "^2.2.1",
+    "sass": "^1.98.0",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
   },
